@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.keisardev.supersmartexample.R
+import com.keisardev.supersmartexample.destinations.ItemDetailsScreenDestination
 import com.keisardev.supersmartexample.feature_list.domain.ListItemUIModel
 import com.keisardev.supersmartexample.feature_list.domain.ProductsScreenViewModel
 import com.keisardev.supersmartexample.feature_list.domain.presentation.components.AddProductDialog
@@ -36,7 +37,6 @@ fun ProductsScreen(
     val viewModel = hiltViewModel<ProductsScreenViewModel>()
     viewModel.navigator = navigator
     val state by viewModel.uiState
-    val itemIndex = rememberSaveable { mutableStateOf(1) }
 
     LaunchedEffect(Unit){
         viewModel.collectShoppingCartItems()
@@ -44,19 +44,19 @@ fun ProductsScreen(
 
     ProductsScreenContent(
         state.products,
-        onAddButtonClicked = { viewModel.onEvent(ProductsScreenEvent.AddButtonClicked) }) {
-        viewModel.onEvent(
-            ProductsScreenEvent.ProductClicked(it.index)
-        )
-    }
+        onAddButtonClicked = { viewModel.onEvent(ProductsScreenEvent.AddButtonClicked) },
+        onItemClicked = {
+            viewModel.onEvent(
+                ProductsScreenEvent.ProductClicked(it.index)
+            )
+        })
     if (state.showAddProductDialog) {
         AddProductDialog(
-            index = itemIndex,
+            index = state.products.size+1,
             onDismiss = {},
             onDelete = {},
             onConfirm = {
                 viewModel.onEvent(ProductsScreenEvent.AddProduct(it))
-                itemIndex.value += 1
             })
     }
 }

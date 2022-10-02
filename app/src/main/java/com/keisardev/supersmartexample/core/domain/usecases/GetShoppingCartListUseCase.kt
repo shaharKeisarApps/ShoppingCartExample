@@ -1,6 +1,6 @@
-package com.keisardev.supersmartexample.domain.usecases
+package com.keisardev.supersmartexample.core.domain.usecases
 
-import com.keisardev.supersmartexample.domain.abstractions.ShoppingCartRepository
+import com.keisardev.supersmartexample.core.domain.abstractions.ShoppingCartRepository
 import javax.inject.Inject
 
 class GetShoppingCartListUseCase @Inject constructor(

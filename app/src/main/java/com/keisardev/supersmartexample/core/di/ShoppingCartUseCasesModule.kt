@@ -1,7 +1,7 @@
-package com.keisardev.supersmartexample.di
+package com.keisardev.supersmartexample.core.di
 
-import com.keisardev.supersmartexample.domain.abstractions.ShoppingCartRepository
-import com.keisardev.supersmartexample.domain.usecases.*
+import com.keisardev.supersmartexample.core.domain.abstractions.ShoppingCartRepository
+import com.keisardev.supersmartexample.core.domain.usecases.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

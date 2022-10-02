@@ -1,4 +1,4 @@
-package com.keisardev.supersmartexample.domain.usecases
+package com.keisardev.supersmartexample.core.domain.usecases
 
 data class ShoppingCartUseCases(
     val addShoppingCartItemUseCase: AddShoppingCartItemUseCase,

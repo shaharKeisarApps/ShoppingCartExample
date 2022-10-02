@@ -1,17 +1,19 @@
 package com.keisardev.supersmartexample.feature_list.domain
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.keisardev.supersmartexample.destinations.ItemDetailsScreenDestination
-import com.keisardev.supersmartexample.domain.usecases.ShoppingCartUseCases
+import com.keisardev.supersmartexample.core.domain.usecases.ShoppingCartUseCases
 import com.keisardev.supersmartexample.feature_list.domain.presentation.ProductsScreenEvent
 import com.keisardev.supersmartexample.feature_list.domain.presentation.ProductsScreenState
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.MathContext
@@ -102,11 +104,16 @@ class ProductsScreenViewModel @Inject constructor(
     private fun navigateToDetails(index: Int) {
         viewModelScope.launch(Dispatchers.Default) {
             val itemFlow = shoppingCartUseCases.getShoppingCartItemUseCase.invoke(index)
-            itemFlow.collectLatest {
-                navigator.navigate(
-                    ItemDetailsScreenDestination(it)
-                )
-            }
+            val item = shoppingCartUseCases.getShoppingCartItemUseCase.invoke(index).first()
+            Log.d("Item", item.toString())
+            navigator.navigate(
+                ItemDetailsScreenDestination(item)
+            )
+//            itemFlow.collectLatest {
+//                navigator.navigate(
+//                    ItemDetailsScreenDestination(it)
+//                )
+//            }
 
         }
 

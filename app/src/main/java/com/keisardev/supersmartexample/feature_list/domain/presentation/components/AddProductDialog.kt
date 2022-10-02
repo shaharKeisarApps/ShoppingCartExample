@@ -34,7 +34,7 @@ import com.keisardev.supersmartexample.ui.theme.Colors
 
 @Composable
 fun AddProductDialog(
-    index: MutableState<Int>,
+    index: Int,
     onDismiss: () -> Unit,
     onDelete: () -> Unit,
     onConfirm: (item: DialogProductModel) -> Unit
@@ -59,14 +59,14 @@ fun AddProductDialog(
                             ),
                         )
                     })
-
             }
         }
     }
 }
 
+
 @Composable
-fun DialogTopSection(index: MutableState<Int>) {
+fun DialogTopSection(index: Int) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top,
@@ -82,7 +82,7 @@ fun DialogTopSection(index: MutableState<Int>) {
                 .background(Colors.IndexBackgroundColor, shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Text(index.value.toString())
+            Text(index.toString())
 
         }
         //todo: by item type
@@ -270,8 +270,6 @@ fun DialogLowerSection(
 @Preview
 @Composable
 fun AddProductDialogPreview() {
-    val itemIndex = remember {
-        mutableStateOf(1)
-    }
+    val itemIndex = 1
     AddProductDialog(itemIndex, {}, {}, {})
 }
