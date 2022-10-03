@@ -1,7 +1,8 @@
 package com.keisardev.supersmartexample.core.data
 
+import android.util.Log
 import com.keisardev.supersmartexample.core.domain.abstractions.ShoppingCartRepository
-import com.keisardev.supersmartexample.feature_list.domain.ShoppingCartItem
+import com.keisardev.supersmartexample.feature_list.domain.entity.ShoppingCartItem
 import kotlinx.coroutines.flow.*
 
 
@@ -11,50 +12,41 @@ class ShoppingCartRepositoryImpl : ShoppingCartRepository {
     val shoppingCartSharedFlow = _shoppingCartSharedFlow.asSharedFlow()
 
     var itemDetailsList = mutableListOf<ShoppingCartItem>()
-   /* override suspend fun getShoppingCartList(): Flow<List<ShoppingCartItem>> = channelFlow {
-        send(itemDetailsList)
-    }
 
+    var index: Int = 0
+
+    override suspend fun getShoppingCartList(): Flow<List<ShoppingCartItem>> = channelFlow {
+        shoppingCartSharedFlow.collectLatest {
+            send(it.asReversed())
+        }
+    }
 
     override suspend fun addItem(shoppingCartItem: ShoppingCartItem) {
         itemDetailsList.add(shoppingCartItem)
+        index += 1
+        _shoppingCartSharedFlow.emit(itemDetailsList)
     }
 
-    override suspend fun removeItem(index: Int) {
-        itemDetailsList.removeAt(index)
+    override suspend fun removeItem(shoppingCartItem: ShoppingCartItem) {
+        if (itemDetailsList.remove(shoppingCartItem))
+        this.index -= 1
+        _shoppingCartSharedFlow.emit(itemDetailsList)
     }
 
     override suspend fun getItem(index: Int): Flow<ShoppingCartItem> = channelFlow {
+        Log.d("getItem", "$index")
         send(itemDetailsList[index])
     }
 
     override suspend fun updateItem( shoppingCartItem: ShoppingCartItem) {
-        itemDetailsList[shoppingCartItem.index-1] = shoppingCartItem
-    }*/
-
-    override suspend fun getShoppingCartList(): Flow<List<ShoppingCartItem>> = channelFlow {
-        shoppingCartSharedFlow.collectLatest {
-            send(it)
-        }
-    }
-
-
-    override suspend fun addItem(shoppingCartItem: ShoppingCartItem) {
-        itemDetailsList.add(shoppingCartItem)
+        itemDetailsList[shoppingCartItem.index.dec()] = shoppingCartItem
         _shoppingCartSharedFlow.emit(itemDetailsList)
     }
 
-    override suspend fun removeItem(index: Int) {
-        itemDetailsList.removeAt(index)
-        _shoppingCartSharedFlow.emit(itemDetailsList)
+
+
+    override fun getIndexOfItem(): Int {
+        return index
     }
 
-    override suspend fun getItem(index: Int): Flow<ShoppingCartItem> = channelFlow {
-        send(shoppingCartSharedFlow.first()[index])
-    }
-
-    override suspend fun updateItem( shoppingCartItem: ShoppingCartItem) {
-        itemDetailsList[shoppingCartItem.index-1] = shoppingCartItem
-        _shoppingCartSharedFlow.emit(itemDetailsList)
-    }
 }

@@ -6,8 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.keisardev.supersmartexample.core.domain.usecases.ShoppingCartUseCases
-import com.keisardev.supersmartexample.feature_list.domain.DialogProductModel
-import com.keisardev.supersmartexample.feature_list.domain.ShoppingCartItem
+import com.keisardev.supersmartexample.feature_add_item.presentation.DialogProductModel
+import com.keisardev.supersmartexample.feature_list.domain.entity.ShoppingCartItem
 import com.keisardev.supersmartexample.navArgs
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,7 +38,12 @@ class ShoppingCartItemDetailsViewModel @Inject constructor(
 
     private fun removeItem(){
         viewModelScope.launch(Dispatchers.IO) {
-            shoppingCartUseCases.removeShoppingCartItemUseCase.invoke(uiState.value.index)
+            shoppingCartUseCases.removeShoppingCartItemUseCase.invoke(uiState.value)
+//            shoppingCartUseCases.updateIndexUseCase.invoke(UpdateIndexEvent.Decrease)
+
+            viewModelScope.launch(Dispatchers.Main){
+                navigator.navigateUp()
+            }
 
         }
     }
@@ -46,6 +51,9 @@ class ShoppingCartItemDetailsViewModel @Inject constructor(
     private fun setNewDetails(dialogItem: DialogProductModel){
         val newItem = uiState.value.copy(amount = dialogItem.amount, name = dialogItem.name)
         updateShoppingCartItem(newItem)
+        viewModelScope.launch(Dispatchers.Main){
+            navigator.navigateUp()
+        }
     }
 
     private fun updateShoppingCartItem(newItem: ShoppingCartItem) {

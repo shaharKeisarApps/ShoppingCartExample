@@ -1,6 +1,6 @@
-package com.keisardev.supersmartexample.feature_list.domain.presentation.components
+package com.keisardev.supersmartexample.feature_list.presentation.components
 
-import com.keisardev.supersmartexample.feature_list.domain.ListItemUIModel
+import com.keisardev.supersmartexample.feature_list.domain.entity.ListItemUIModel
 
 object ProductItemPreview {
     val avocado = ListItemUIModel(

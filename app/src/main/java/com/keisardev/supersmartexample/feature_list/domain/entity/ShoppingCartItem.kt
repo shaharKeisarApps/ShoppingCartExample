@@ -1,4 +1,4 @@
-package com.keisardev.supersmartexample.feature_list.domain
+package com.keisardev.supersmartexample.feature_list.domain.entity
 
 data class ShoppingCartItem(
     val index: Int = 0,

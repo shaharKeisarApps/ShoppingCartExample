@@ -37,5 +37,12 @@ class ShoppingCartUseCasesModule {
     fun provideUpdateShoppingCartItemUseCase(shoppingCartRepository: ShoppingCartRepository) =
         UpdateShoppingCartItemUseCase(shoppingCartRepository)
 
+    @Singleton
+    @Provides
+    fun provideGetIndexUseCase(
+        shoppingCartRepository: ShoppingCartRepository
+    ) = GetIndexUseCase(shoppingCartRepository)
+
+
 
 }

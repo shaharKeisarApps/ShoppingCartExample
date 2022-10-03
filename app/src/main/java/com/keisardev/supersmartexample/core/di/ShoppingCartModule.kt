@@ -23,12 +23,14 @@ object ShoppingCartModule {
         getShoppingCartItemUseCase: GetShoppingCartItemUseCase,
         getShoppingCartListUseCase: GetShoppingCartListUseCase,
         removeShoppingCartItemUseCase: RemoveShoppingCartItemUseCase,
-        updateShoppingCartItemUseCase: UpdateShoppingCartItemUseCase
+        updateShoppingCartItemUseCase: UpdateShoppingCartItemUseCase,
+        getIndexUseCase: GetIndexUseCase
     ) = ShoppingCartUseCases(
         addShoppingCartItemUseCase,
         getShoppingCartItemUseCase,
         getShoppingCartListUseCase,
         removeShoppingCartItemUseCase,
-        updateShoppingCartItemUseCase
+        updateShoppingCartItemUseCase,
+        getIndexUseCase
     )
 }

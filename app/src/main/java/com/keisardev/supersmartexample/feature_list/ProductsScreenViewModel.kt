@@ -1,22 +1,21 @@
-package com.keisardev.supersmartexample.feature_list.domain
+package com.keisardev.supersmartexample.feature_list
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.keisardev.supersmartexample.destinations.ItemDetailsScreenDestination
 import com.keisardev.supersmartexample.core.domain.usecases.ShoppingCartUseCases
-import com.keisardev.supersmartexample.feature_list.domain.presentation.ProductsScreenEvent
-import com.keisardev.supersmartexample.feature_list.domain.presentation.ProductsScreenState
+import com.keisardev.supersmartexample.feature_list.domain.entity.ListItemUIModel
+import com.keisardev.supersmartexample.feature_list.domain.entity.ShoppingCartItem
+import com.keisardev.supersmartexample.feature_list.presentation.ProductsScreenEvent
+import com.keisardev.supersmartexample.feature_list.presentation.ProductsScreenState
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
-import java.math.MathContext
 import java.text.DecimalFormat
 import java.util.UUID.randomUUID
 import javax.inject.Inject
@@ -30,16 +29,12 @@ class ProductsScreenViewModel @Inject constructor(
     private val _uiState = mutableStateOf(ProductsScreenState())
     val uiState: State<ProductsScreenState> get() = _uiState
 
-    var itemList = mutableListOf<ListItemUIModel>()
-
-    var itemIndex = 0
-
     fun collectShoppingCartItems() {
         viewModelScope.launch(Dispatchers.Default) {
             val listFlow = shoppingCartUseCases.getShoppingCartListUseCase.invoke()
             listFlow.collectLatest { shoppingCartItems ->
                 _uiState.value = uiState.value.copy(products = shoppingCartItems.map {
-                    ListItemUIModel(it.index, it.name, it.price)
+                    ListItemUIModel(shoppingCartItems.asReversed().indexOf(it).inc(), it.name, it.price)
                 })
             }
         }
@@ -48,7 +43,6 @@ class ProductsScreenViewModel @Inject constructor(
     fun onEvent(event: ProductsScreenEvent) {
         when (event) {
             is ProductsScreenEvent.AddProduct -> {
-                itemIndex += 1
                 val itemDetails = event.itemToAdd
                 createNewItem(itemDetails.name, itemDetails.amount)
             }
@@ -56,13 +50,16 @@ class ProductsScreenViewModel @Inject constructor(
             is ProductsScreenEvent.ProductClicked -> navigateToDetails(event.index)
             ProductsScreenEvent.AddButtonClicked -> _uiState.value =
                 uiState.value.copy(showAddProductDialog = true)
+
+            ProductsScreenEvent.DismissClicked -> _uiState.value =
+                uiState.value.copy(showAddProductDialog = false)
         }
     }
 
     private fun createNewItem(name: String, amount: String) {
         val price = generatePrice()
         val shoppingCartItem = ShoppingCartItem(
-            index = itemIndex,
+            index = getIndex(),
             amount = amount,
             name = name,
             price = price,
@@ -70,13 +67,14 @@ class ProductsScreenViewModel @Inject constructor(
             description = generateDescription()
         )
         viewModelScope.launch {
-            itemList.add(ListItemUIModel(itemIndex, name, price))
             shoppingCartUseCases.addShoppingCartItemUseCase(shoppingCartItem)
             _uiState.value = uiState.value.copy(showAddProductDialog = false)
         }
 
 
     }
+
+    private fun getIndex() = shoppingCartUseCases.getIndexUseCase.invoke() + 1
 
     private fun generateDescription(): String {
         val descriptionDummyList = listOf(
@@ -103,17 +101,12 @@ class ProductsScreenViewModel @Inject constructor(
 
     private fun navigateToDetails(index: Int) {
         viewModelScope.launch(Dispatchers.Default) {
-            val itemFlow = shoppingCartUseCases.getShoppingCartItemUseCase.invoke(index)
             val item = shoppingCartUseCases.getShoppingCartItemUseCase.invoke(index).first()
-            Log.d("Item", item.toString())
-            navigator.navigate(
-                ItemDetailsScreenDestination(item)
-            )
-//            itemFlow.collectLatest {
-//                navigator.navigate(
-//                    ItemDetailsScreenDestination(it)
-//                )
-//            }
+            viewModelScope.launch(Dispatchers.Main){
+                navigator.navigate(
+                    ItemDetailsScreenDestination(item)
+                )
+            }
 
         }
 

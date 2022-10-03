@@ -1,4 +1,4 @@
-package com.keisardev.supersmartexample
+package com.keisardev.supersmartexample.core.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.keisardev.supersmartexample.NavGraphs
 import com.keisardev.supersmartexample.ui.theme.SuperSmartExampleTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.NavGraph
@@ -30,18 +31,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    SuperSmartExampleTheme {
-        Greeting("Android")
     }
 }

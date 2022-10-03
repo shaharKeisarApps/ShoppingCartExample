@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
-package com.keisardev.supersmartexample.feature_list.domain.presentation.components
+package com.keisardev.supersmartexample.feature_list.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,16 +8,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.keisardev.supersmartexample.R
-import com.keisardev.supersmartexample.feature_list.domain.ListItemUIModel
-import com.keisardev.supersmartexample.feature_list.domain.presentation.components.ProductItemPreview.avocado
+import com.keisardev.supersmartexample.feature_list.domain.entity.ListItemUIModel
+import com.keisardev.supersmartexample.feature_list.presentation.components.ProductItemPreview.avocado
+import com.keisardev.supersmartexample.ui.theme.Colors
 
 @Composable
 fun ProductItem(product: ListItemUIModel, onItemClicked: () -> Unit) {
@@ -31,16 +34,16 @@ fun ProductItem(product: ListItemUIModel, onItemClicked: () -> Unit) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.background(
-                    color = Color(R.color.index_background_color),
+                    color = Colors.IndexBackgroundColor,
                     shape = CircleShape
-                ).size(30.dp)
+                ).size(48.dp)
             ) {
-                Text(text = product.index.toString(), modifier = Modifier.padding(4.dp))
+                Text(text = product.index.toString(), style = MaterialTheme.typography.titleLarge,  fontWeight = FontWeight.Bold, modifier = Modifier.padding(4.dp), color = Color.White)
             }
             Spacer(modifier = Modifier.size(8.dp))
             Column(verticalArrangement = Arrangement.Center) {
                 Text(text = product.name)
-                Text(text = product.price)
+                Text(text = product.price, fontWeight = FontWeight.Bold)
 
             }
         }

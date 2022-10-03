@@ -1,18 +1,14 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
 package com.keisardev.supersmartexample.feature_list.domain.presentation.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -20,34 +16,40 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.keisardev.supersmartexample.R
 import com.keisardev.supersmartexample.feature_add_item.ItemTypeState
 import com.keisardev.supersmartexample.feature_add_item.presentation.AmountTypeSelection
-import com.keisardev.supersmartexample.feature_list.domain.DialogProductModel
+import com.keisardev.supersmartexample.feature_add_item.presentation.DialogProductModel
 import com.keisardev.supersmartexample.ui.theme.Colors
 
 @Composable
 fun AddProductDialog(
+    name: String = "",
+    _amount: String = "1",
     index: Int,
     onDismiss: () -> Unit,
     onDelete: () -> Unit,
     onConfirm: (item: DialogProductModel) -> Unit
 ) {
-    val productName = remember { mutableStateOf("") }
+    val productName = remember { mutableStateOf(name) }
     val amount = remember {
-        mutableStateOf<String>("")
+        mutableStateOf<String>(_amount)
     }
 
-    Dialog(onDismissRequest = { /*TODO*/ }) {
-        ElevatedCard(shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxHeight(0.85f)) {
+    Dialog(onDismissRequest = { }) {
+        ElevatedCard(shape = RoundedCornerShape(12.dp), modifier = Modifier.wrapContentHeight()) {
             Column(verticalArrangement = Arrangement.SpaceBetween) {
-                DialogTopSection(index)
+                DialogTopSection(index) {
+                    onDismiss()
+                }
                 DialogMiddleSection(productName, amount)
                 DialogLowerSection(
                     onDelete = { onDelete() },
@@ -66,7 +68,7 @@ fun AddProductDialog(
 
 
 @Composable
-fun DialogTopSection(index: Int) {
+fun DialogTopSection(index: Int, onDismiss: () -> Unit) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top,
@@ -82,37 +84,42 @@ fun DialogTopSection(index: Int) {
                 .background(Colors.IndexBackgroundColor, shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Text(index.toString())
+            Text( text = index.toString(), style = MaterialTheme.typography.titleLarge,  fontWeight = FontWeight.Bold, modifier = Modifier.padding(4.dp), color = Color.White)
 
         }
         //todo: by item type
         Image(
             painter = painterResource(id = R.drawable.ic_unit_item),
             contentDescription = "dismiss_button",
-            modifier = Modifier.fillMaxWidth(0.4f).padding(top = 14.dp)
+            modifier = Modifier
+                .fillMaxWidth(0.4f)
+                .padding(top = 14.dp)
         )
 
-        Button(
-            onClick = { /*TODO*/ },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Colors.ExitButton,
-                contentColor = Color.Black
-            ),
-            modifier = Modifier.size(40.dp)
+
+        Button(onClick = { onDismiss()},
+            modifier= Modifier.size(38.dp), // it is important otherwise the button is oval
+            shape = CircleShape,
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.outlinedButtonColors(containerColor = Colors.ExitButton,
+                contentColor = Color.Black)
         ) {
-            Icon(Icons.Filled.Close, contentDescription = "close",modifier = Modifier.fillMaxSize())
-//            Image(
-//                painter = painterResource(id = R.drawable.ic_dismiss),
-//                contentDescription = "dismiss_button",
-//                modifier = Modifier.size(1000.dp)
-//            )
+            Icon(Icons.Filled.Close, contentDescription = "content description")
         }
+
     }
 }
 
 @Composable
 fun DialogMiddleSection(productName: MutableState<String>, currentAmount: MutableState<String>) {
     val itemTypeState = remember { mutableStateOf<ItemTypeState>(ItemTypeState.QuantityItem) }
+    if (currentAmount.value.isNotEmpty()) {
+        if (currentAmount.value.toIntOrNull() != null) {
+            itemTypeState.value = ItemTypeState.QuantityItem
+        } else if (currentAmount.value.toDoubleOrNull() != null) {
+            itemTypeState.value = ItemTypeState.WeightItem
+        }
+    }
 
     val buttonModifier = Modifier
         .background(Color(184, 184, 184))
@@ -139,7 +146,7 @@ fun DialogMiddleSection(productName: MutableState<String>, currentAmount: Mutabl
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .background(Color(184, 184, 184))
+                    .background(Colors.calcOperatorBackground)
                     .fillMaxWidth()
                     .height(45.dp)
                     .padding(4.dp)
@@ -161,7 +168,7 @@ fun DialogMiddleSection(productName: MutableState<String>, currentAmount: Mutabl
 @Composable
 fun WeightItem(buttonModifier: Modifier, currentAmount: MutableState<String>) {
     val weight = remember {
-        mutableStateOf(1.00)
+        mutableStateOf(currentAmount.value.toDoubleOrNull() ?: 1.00)
     }
     Card(
         onClick = {
@@ -195,7 +202,7 @@ fun WeightItem(buttonModifier: Modifier, currentAmount: MutableState<String>) {
 @Composable
 fun UnitItem(buttonModifier: Modifier, currentAmount: MutableState<String>) {
     val quantity = remember {
-        mutableStateOf(1)
+        mutableStateOf(currentAmount.value.toIntOrNull() ?: 1)
     }
     Card(
         onClick = {
@@ -213,7 +220,7 @@ fun UnitItem(buttonModifier: Modifier, currentAmount: MutableState<String>) {
             contentDescription = "minus button"
         )
     }
-    Text(text = quantity.value.toString())
+    Text(text = currentAmount.value)
     Card(
         onClick = {
             quantity.value += 1
@@ -258,7 +265,7 @@ fun DialogLowerSection(
             onClick = { onConfirm() },
             colors = ButtonDefaults.buttonColors(containerColor = Colors.confirmBackground),
             modifier = Modifier
-                .fillMaxWidth(0.8f)
+                .fillMaxWidth(0.9f).fillMaxHeight()
         ) {
             Text(text = stringResource(R.string.confirm))
 
@@ -271,5 +278,5 @@ fun DialogLowerSection(
 @Composable
 fun AddProductDialogPreview() {
     val itemIndex = 1
-    AddProductDialog(itemIndex, {}, {}, {})
+    AddProductDialog("", "", itemIndex, {}, {}, {})
 }

@@ -5,5 +5,6 @@ data class ShoppingCartUseCases(
     val getShoppingCartItemUseCase: GetShoppingCartItemUseCase,
     val getShoppingCartListUseCase: GetShoppingCartListUseCase,
     val removeShoppingCartItemUseCase: RemoveShoppingCartItemUseCase,
-    val updateShoppingCartItemUseCase: UpdateShoppingCartItemUseCase
+    val updateShoppingCartItemUseCase: UpdateShoppingCartItemUseCase,
+    val getIndexUseCase: GetIndexUseCase
 )
